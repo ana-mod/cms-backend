@@ -56,6 +56,11 @@ class Conference {
 		this.presentations = presentations;
 	}
 
+	public Conference(String topic, String name) {
+		this.topic = topic;
+		this.name = name;
+	}
+
 	public Long getId() {
 		return id;
 	}

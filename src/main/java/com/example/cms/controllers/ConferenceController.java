@@ -3,9 +3,8 @@ package com.example.cms.controllers;
 import com.example.cms.models.Conference;
 import com.example.cms.repositories.ConferenceRepository;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 class ConferenceController {
@@ -20,6 +19,12 @@ class ConferenceController {
 	@GetMapping("/conferences")
 	Iterable<Conference> conferences() {
 		return conferenceRepository.findAll();
+	}
+
+	@PostMapping("/conference")
+	ResponseEntity<?> createConference(@RequestBody Conference conferenceToAdd) {
+		Conference result = conferenceRepository.save(conferenceToAdd);
+		return ResponseEntity.ok().build();
 	}
 
 	ConferenceController(ConferenceRepository conferenceRepository) {
