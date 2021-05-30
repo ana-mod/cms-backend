@@ -44,6 +44,8 @@ class Conference {
 	@OneToMany(mappedBy = "conference")
 	private List<Presentation> presentations;
 
+	public Conference() {}
+
 	public Conference(String topic, String name, Date startDate, Date endDate, String description,
 			List<Notification> notifications, Set<User> users, List<Presentation> presentations) {
 		this.topic = topic;
