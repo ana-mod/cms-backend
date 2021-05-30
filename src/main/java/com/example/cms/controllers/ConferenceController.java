@@ -18,7 +18,6 @@ class ConferenceController {
 	}
 
 	@GetMapping("/conferences")
-	@ResponseBody
 	Iterable<Conference> conferences() {
 		return conferenceRepository.findAll();
 	}
