@@ -1,5 +1,8 @@
 package com.example.cms.models;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -42,6 +45,7 @@ class Conference {
 	 private Set<User> users;
 
 	@OneToMany(mappedBy = "conference")
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private List<Presentation> presentations;
 
 	public Conference() {}

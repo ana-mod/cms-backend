@@ -1,6 +1,11 @@
 package com.example.cms.models;
 
-import java.util.Set;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.security.Principal;
+import java.util.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
 @Entity
-public class User {
+public class User implements Principal, UserDetails {
    
     @Id
 	@GeneratedValue
@@ -33,6 +38,10 @@ public class User {
         this.email = email;
 	}
 
+	public User() {
+
+	}
+
 	public Long getId() {
 		return id;
 	}
@@ -41,12 +50,40 @@ public class User {
 		this.id = id;
 	}
 
+	@Override
 	public String getUsername() {
 		return username;
 	}
 
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
+
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		List<GrantedAuthority> authorities = new LinkedList<>();
+		authorities.add(new SimpleGrantedAuthority("User"));
+		return authorities;
 	}
 
 	public String getPassword() {
@@ -66,4 +103,8 @@ public class User {
 	}
 
 
+	@Override
+	public String getName() {
+		return username;
+	}
 }

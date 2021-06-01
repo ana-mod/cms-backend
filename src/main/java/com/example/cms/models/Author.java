@@ -1,5 +1,8 @@
 package com.example.cms.models;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import java.util.Date;
 import java.util.List;
 
@@ -35,6 +38,7 @@ public class Author {
     private User user;
 
     @OneToMany(mappedBy = "conference")
+    @LazyCollection(LazyCollectionOption.TRUE)
 	private List<Presentation> presentations;
 
     public Author(String firstName, String lastName, Date birthday, String bioDetails, User user) {
