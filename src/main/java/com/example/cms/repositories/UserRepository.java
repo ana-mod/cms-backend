@@ -10,8 +10,8 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(nativeQuery = true, value = "SELECT * " +
-            "FROM USER " +
-            "WHERE USERNAME=:loginOrEmail OR EMAIL=:loginOrEmail")
+            "FROM cms_user " +
+            "WHERE username=:loginOrEmail OR email=:loginOrEmail")
     User authenticateByLoginOrEmail(@Param("loginOrEmail") String loginOrEmail);
 
     User getByUsernameOrEmail(String username, String email);

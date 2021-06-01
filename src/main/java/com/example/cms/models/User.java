@@ -20,13 +20,13 @@ public class User implements Principal, UserDetails {
 	@Column(name = "UserId")
 	private Long id;
 	
-	@Column(unique = true)
+	@Column(name = "Username", unique = true)
 	private String username;
 	
-	@Column
+	@Column(name = "Password")
     private String password;
     
-    @Column(unique = true)
+    @Column(name = "Email", unique = true)
 	private String email;
 	
 	@ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
