@@ -10,7 +10,7 @@ import java.util.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "author", schema = "cms")
+@Table(name = "author")
 public class User implements Principal, UserDetails {
    
     @Id
