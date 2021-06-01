@@ -32,7 +32,7 @@ public class AuthenticationService implements UserDetailsService {
 
     public boolean registerUser(RegisterForm form) {
 
-        User existingUser = userRepository.getUserByUsernameOrEmail(form.getUsername(), form.getEmail());
+        User existingUser = userRepository.getByUsernameOrEmail(form.getUsername(), form.getEmail());
 
         if(existingUser != null) {
             return false;
