@@ -49,6 +49,11 @@ public class Author {
 
     }
 
+    public Author(User user) {
+        this.firstName = user.getName();
+        this.user = user;
+    }
+
     public Long getId() {
         return id;
     }
@@ -88,5 +93,4 @@ public class Author {
     public void setBioDetails(String bioDetails) {
         this.bioDetails = bioDetails;
     }
-
 }
