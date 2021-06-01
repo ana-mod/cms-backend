@@ -34,9 +34,11 @@ class Conference {
 	private String description;
 
 	@OneToMany(mappedBy = "conference")
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private List<Notification> notifications;
 
-	@JoinTable
+	@JoinTable(joinColumns = @JoinColumn(name = "ConferenceId"), inverseJoinColumns = @JoinColumn(name = "UserId"))
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@ManyToMany
 	 private Set<User> users;
 

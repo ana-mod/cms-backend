@@ -26,11 +26,11 @@ public class Author {
     @Column(name = "Birthday")
     private Date birthday;
 
-    @Column(name="BioDetails", length = 1000, nullable = true)
+    @Column(name="BioDetails", length = 1000)
     private String bioDetails;
 
-    @OneToOne
-    @JoinColumn(name = "UserId")
+    @OneToOne(targetEntity = User.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "UserId", referencedColumnName = "UserId")
     private User user;
 
     @OneToMany(mappedBy = "conference")
@@ -43,6 +43,10 @@ public class Author {
         this.birthday = birthday;
         this.bioDetails = bioDetails;
         this.user = user;
+    }
+
+    public Author() {
+
     }
 
     public Long getId() {

@@ -1,5 +1,7 @@
 package com.example.cms.models;
 
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,7 +29,8 @@ public class User implements Principal, UserDetails {
     @Column(unique = true)
 	private String email;
 	
-	@ManyToMany(mappedBy = "users")
+	@ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
+	@LazyCollection(LazyCollectionOption.TRUE)
 	private Set<Conference> conferences;
 
 	public User(String username, String password, String email) {

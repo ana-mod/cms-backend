@@ -12,12 +12,12 @@ public class Presentation {
     @Column(name = "PresentationId")
 	private Long id;
     
-    @ManyToOne
-    @JoinColumn(name = "AuthorId")
+    @ManyToOne(targetEntity = Author.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AuthorId", referencedColumnName = "AuthorId")
     private Author author;
 
-	@ManyToOne
-	@JoinColumn(name = "ConferenceId")
+	@ManyToOne(targetEntity = Conference.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "ConferenceId", referencedColumnName = "ConferenceId")
 	private Conference conference;
 
 	@Column(name = "Name")
@@ -32,7 +32,7 @@ public class Presentation {
     @Column(name = "EndTime")
     private Date endTime;
     
-    @Column(nullable = true, name = "SubmitionDeadline")
+    @Column(name = "SubmitionDeadline")
 	private Date submitionDeadline;
 
 	public Presentation(String name, String fileName, Date startTime, Date endTime, Date submitionDeadline) {
@@ -42,6 +42,10 @@ public class Presentation {
         this.endTime = endTime;
         this.submitionDeadline = submitionDeadline;
 	}
+
+    public Presentation() {
+
+    }
 
     public Author getAuthor() {
         return author;

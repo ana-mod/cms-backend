@@ -13,8 +13,8 @@ public class Notification {
 	@Column(name = "NotificationId")
 	private Long id;
 	
-	@ManyToOne
-	@JoinColumn
+	@ManyToOne(targetEntity = Conference.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "ConferenceId", referencedColumnName = "ConferenceId")
 	private Conference conference;
 	
 	@Column
@@ -27,6 +27,10 @@ public class Notification {
 		this.conference = conference;
 		this.message = message;
 		this.sentDate = sentDate;
+	}
+
+	public Notification() {
+
 	}
 
 	public Long getId() {
