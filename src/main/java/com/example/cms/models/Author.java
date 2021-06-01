@@ -6,15 +6,10 @@ import org.hibernate.annotations.LazyCollectionOption;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "author", schema = "cms")
 public class Author {
     
     @Id

@@ -7,13 +7,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.security.Principal;
 import java.util.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 
 @Entity
+@Table(name = "author", schema = "cms")
 public class User implements Principal, UserDetails {
    
     @Id
