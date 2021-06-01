@@ -21,8 +21,9 @@ class Conference {
 	@Column
 	private String topic;
 	
-	@Column
-	private String name;
+	@ManyToOne
+	@JoinColumn(name="AuthorId", referencedColumnName = "AuthorId")
+	private Author author;
 
 	@Column
 	private Date startDate;
@@ -48,10 +49,9 @@ class Conference {
 
 	public Conference() {}
 
-	public Conference(String topic, String name, Date startDate, Date endDate, String description,
+	public Conference(String topic, Date startDate, Date endDate, String description,
 			List<Notification> notifications, Set<User> users, List<Presentation> presentations) {
 		this.topic = topic;
-		this.name = name;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.description = description;
@@ -60,9 +60,8 @@ class Conference {
 		this.presentations = presentations;
 	}
 
-	public Conference(String topic, String name) {
+	public Conference(String topic) {
 		this.topic = topic;
-		this.name = name;
 	}
 
 	public Long getId() {
@@ -81,12 +80,12 @@ class Conference {
 		this.topic = topic;
 	}
 
-	public String getName() {
-		return name;
+	public Author getAuthor() {
+		return author;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setAuthor(Author author) {
+		this.author = author;
 	}
 
 	public Date getStartDate() {
