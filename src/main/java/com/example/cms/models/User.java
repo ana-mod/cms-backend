@@ -33,6 +33,9 @@ public class User implements Principal, UserDetails {
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private Set<Conference> conferences;
 
+	@OneToOne(mappedBy = "user")
+	private Author author;
+
 	public User(String username, String password, String email) {
 		this.username = username;
         this.password = password;
