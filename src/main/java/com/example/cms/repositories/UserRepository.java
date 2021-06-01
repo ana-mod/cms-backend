@@ -14,4 +14,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "WHERE LOGIN=:loginOrEmail OR EMAIL=:loginOrEmail")
     User authenticateByLoginOrEmail(@Param("loginOrEmail") String loginOrEmail);
 
+    User getUserByUsernameOrEmail(String username, String email);
+
 }
