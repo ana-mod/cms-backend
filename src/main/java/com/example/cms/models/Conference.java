@@ -10,7 +10,7 @@ import java.util.Set;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "conference")
+@Table(name = "cms_conference")
 public
 class Conference {
 	@Id

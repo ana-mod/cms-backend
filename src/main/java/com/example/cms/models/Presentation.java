@@ -5,7 +5,7 @@ import java.util.Date;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "presentation")
+@Table(name = "cms_presentation")
 public class Presentation {
     @Id
 	@GeneratedValue
