@@ -12,7 +12,7 @@ import java.util.*;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "author")
+@Table(name = "user")
 public class User implements Principal, UserDetails {
    
     @Id
