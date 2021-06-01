@@ -14,6 +14,7 @@ public class Author {
     
     @Id
 	@GeneratedValue
+    @Column(name = "AuthorId")
 	private Long id;
 	
 	@Column(name = "FirstName")

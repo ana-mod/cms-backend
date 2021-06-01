@@ -15,6 +15,7 @@ public class User implements Principal, UserDetails {
    
     @Id
 	@GeneratedValue
+	@Column(name = "UserId")
 	private Long id;
 	
 	@Column(unique = true)

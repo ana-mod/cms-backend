@@ -15,6 +15,7 @@ public
 class Conference {
 	@Id
 	@GeneratedValue
+	@Column(name = "ConferenceId")
 	private Long id;
 	
 	@Column

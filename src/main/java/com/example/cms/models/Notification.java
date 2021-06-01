@@ -10,6 +10,7 @@ public class Notification {
     
     @Id
 	@GeneratedValue
+	@Column(name = "NotificationId")
 	private Long id;
 	
 	@ManyToOne

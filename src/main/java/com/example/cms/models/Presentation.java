@@ -9,6 +9,7 @@ import javax.persistence.*;
 public class Presentation {
     @Id
 	@GeneratedValue
+    @Column(name = "PresentationId")
 	private Long id;
     
     @ManyToOne
