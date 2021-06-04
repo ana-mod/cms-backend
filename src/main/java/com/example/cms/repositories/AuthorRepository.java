@@ -9,6 +9,6 @@ public interface AuthorRepository extends JpaRepository<Author, Long> {
 
     public boolean existsByUserId(Long userId);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM cms_author JOIN cms_user WHERE UserId=:userId LIMIT 1")
+//    @Query(nativeQuery = true, value = "SELECT * FROM cms_author JOIN cms_user WHERE UserId=:userId LIMIT 1")
     public Author findByUserId(@Param("userId") Long userId);
 }

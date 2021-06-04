@@ -136,7 +136,15 @@ class Conference {
 		this.presentations = presentations;
 	}
 
-
+	public void updateFrom(Conference source) {
+		this.topic = source.topic;
+		this.startDate = source.startDate;
+		this.endDate = source.endDate;
+		this.description = source.description;
+		this.notifications = source.notifications;
+		this.users = source.users;
+		this.presentations = source.presentations;
+	}
 
 
 }
