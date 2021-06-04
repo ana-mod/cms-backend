@@ -51,17 +51,17 @@ class ConferenceController {
         var conferenceOpt = conferenceRepository.findById(id);
         Conference conferenceToUpdate;
         if (conferenceOpt.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(404).body("There is no such conference");
 
         } else {
             conferenceToUpdate = conferenceRepository.findById(id).get();
 
             if (!requesterIsAuthor(conferenceToUpdate)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You must be the author to update a conference.");
+                return ResponseEntity.status(401).body("You must be the author to update a conference.");
             } else {
                 conferenceToUpdate.updateFrom(updated);
                 conferenceRepository.save(conferenceToUpdate);
-                return ResponseEntity.ok().build();
+                return ResponseEntity.ok(conferenceToUpdate);
             }
         }
     }
