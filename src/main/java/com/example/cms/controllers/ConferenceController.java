@@ -25,19 +25,18 @@ class ConferenceController {
         return "Hello there";
     }
 
-//    @GetMapping("/conferences")
-//    Iterable<Conference> conferences() {
-//        return conferenceRepository.findAll();
-//    }
-
-    @GetMapping("/conferences")
-    Iterable<Conference> searchByfilter(@RequestParam Optional<String> search
-    									@RequestParam Optional<String> sortBy) {
-        return conferenceRepository.findByName(search.orElse("_"),
-        		new PageRequest(page.orElse(0),5,
-        				Sort.Direction.ASC, sortBy.orElse("startDate")));
-    }
+   @GetMapping("/conferences")
+   Iterable<Conference> conferences() {
+       return conferenceRepository.findAll();
+   }
     
+//     @GetMapping("/conferences")
+//     Iterable<Conference> searchByfilter(@RequestParam Optional<String> search
+//     									@RequestParam Optional<String> sortBy) {
+//         return conferenceRepository.findByName(search.orElse("_"),
+//         		new PageRequest(page.orElse(0),5,
+//         				Sort.Direction.ASC, sortBy.orElse("startDate")));
+//     }
     
     @PostMapping("/conference")
     ResponseEntity<Conference> createConference(@RequestBody Conference conferenceToAdd) {
