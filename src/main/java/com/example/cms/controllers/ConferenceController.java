@@ -1,17 +1,17 @@
 package com.example.cms.controllers;
 
+import com.example.cms.exceptions.NoSuchConferenceException;
+import com.example.cms.exceptions.UserUnauthorizedException;
 import com.example.cms.models.Author;
 import com.example.cms.models.Conference;
 import com.example.cms.models.User;
 import com.example.cms.repositories.AuthorRepository;
 import com.example.cms.repositories.ConferenceRepository;
-import org.springframework.http.HttpStatus;
+import com.example.cms.services.ConferenceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -19,6 +19,7 @@ class ConferenceController {
 
     private final ConferenceRepository conferenceRepository;
     private final AuthorRepository authorsRepository;
+    private final ConferenceService conferenceService;
 
     @GetMapping("/")
     String hello() {
@@ -27,7 +28,7 @@ class ConferenceController {
 
    @GetMapping("/conferences")
    Iterable<Conference> conferences() {
-       return conferenceRepository.findAll();
+       return conferenceService.getAllConferences();
    }
     
 //     @GetMapping("/conferences")
@@ -40,50 +41,38 @@ class ConferenceController {
     
     @PostMapping("/conference")
     ResponseEntity<Conference> createConference(@RequestBody Conference conferenceToAdd) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
-        Author author;
-        if (authorsRepository.existsByUserId(user.getId())) {
-            author = authorsRepository.findByUserId(user.getId());
-        } else {
-            author = new Author(user);
-            authorsRepository.save(author);
-        }
-        conferenceToAdd.setAuthor(author);
-
-        Conference result = conferenceRepository.save(conferenceToAdd);
+        Conference result = conferenceService.createConference(conferenceToAdd);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/conference/{id}")
     ResponseEntity<?> editConference(@PathVariable long id, @RequestBody Conference updated) {
-        var conferenceOpt = conferenceRepository.findById(id);
-        Conference conferenceToUpdate;
-        if (conferenceOpt.isEmpty()) {
+        try {
+            Conference conferenceToUpdate;
+            conferenceToUpdate = conferenceService.updateConference(id, updated);
+            return ResponseEntity.ok(conferenceToUpdate);
+        } catch (NoSuchConferenceException e) {
             return ResponseEntity.status(404).body("There is no such conference");
-
-        } else {
-            conferenceToUpdate = conferenceRepository.findById(id).get();
-
-            if (!requesterIsAuthor(conferenceToUpdate)) {
-                return ResponseEntity.status(401).body("You must be the author to update a conference.");
-            } else {
-                conferenceToUpdate.updateFrom(updated);
-                conferenceRepository.save(conferenceToUpdate);
-                return ResponseEntity.ok(conferenceToUpdate);
-            }
+        } catch (UserUnauthorizedException e) {
+            return ResponseEntity.status(401).body("You must be the author to update a conference.");
         }
     }
 
-    private boolean requesterIsAuthor(Conference conf) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
-        Author author = authorsRepository.findByUserId(user.getId());
-        return author != null && author.getId().equals(conf.getAuthor().getId());
+    @DeleteMapping("/conference/{id}")
+    ResponseEntity<?> deleteConference(@PathVariable long id) {
+        try {
+            conferenceService.deleteConference(id);
+            return ResponseEntity.ok().build();
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        } catch (UserUnauthorizedException e) {
+            return ResponseEntity.status(401).body("You must be the author to delete a conference.");
+        }
     }
 
-    ConferenceController(ConferenceRepository conferenceRepository, AuthorRepository authorsRepository) {
+    ConferenceController(ConferenceRepository conferenceRepository, AuthorRepository authorsRepository, ConferenceService conferenceService) {
         this.conferenceRepository = conferenceRepository;
         this.authorsRepository = authorsRepository;
+        this.conferenceService = conferenceService;
     }
 }
