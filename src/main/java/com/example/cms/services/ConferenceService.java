@@ -17,8 +17,8 @@ import java.util.Optional;
 @Service
 public class ConferenceService {
 
-    private ConferenceRepository conferenceRepository;
-    private AuthorRepository authorRepository;
+    private final ConferenceRepository conferenceRepository;
+    private final AuthorRepository authorRepository;
 
     public ConferenceService(ConferenceRepository conferenceRepository, AuthorRepository authorRepository) {
         this.conferenceRepository = conferenceRepository;
@@ -34,9 +34,53 @@ public class ConferenceService {
         Author author = findOrCreateAuthor();
         conferenceToCreate.setAuthor(author);
 
-        Conference result = conferenceRepository.save(conferenceToCreate);
+        return conferenceRepository.save(conferenceToCreate);
+    }
 
-        return result;
+    @Transactional
+    public Conference updateConference(long id, Conference updatedVersion) throws NoSuchConferenceException, UserUnauthorizedException {
+        var conferenceOpt = conferenceRepository.findById(id);
+        if (conferenceOpt.isEmpty()) {
+            throw new NoSuchConferenceException();
+        }
+        if (!userAuthorized(conferenceOpt)) {
+            throw new UserUnauthorizedException();
+        }
+        Conference toBeUpdated = conferenceOpt.get();
+        toBeUpdated.updateFrom(updatedVersion);
+        return conferenceRepository.save(toBeUpdated);
+    }
+
+    @Transactional
+    public void deleteConference(long id) throws NoSuchConferenceException, UserUnauthorizedException {
+        var conferenceOpt = conferenceRepository.findById(id);
+        if (conferenceOpt.isEmpty()) {
+            throw new NoSuchConferenceException();
+        }
+        if (!userAuthorized(conferenceOpt)) {
+            throw new UserUnauthorizedException();
+        }
+        conferenceRepository.delete(conferenceOpt.get());
+    }
+
+    public Conference getConference(long id) throws NoSuchConferenceException {
+        var conferenceOpt = conferenceRepository.findById(id);
+        if (conferenceOpt.isEmpty()) {
+            throw new NoSuchConferenceException();
+        }
+        return conferenceOpt.get();
+    }
+
+    private boolean userAuthorized(Optional<Conference> conferenceOpt) {
+        User user = getCurrentlyLoggedUser();
+        var optAuthor = authorRepository.findByUserId(user.getId());
+        return optAuthor.map(
+                author -> conferenceOpt.map(
+                        conference -> conference.getAuthor().getId()
+                                .equals(
+                                        author.getId()))
+                        .orElse(false))
+                .orElse(false);
     }
 
     private Author findOrCreateAuthor() {
@@ -56,45 +100,6 @@ public class ConferenceService {
 
     private User getCurrentlyLoggedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
-        return user;
-    }
-
-    @Transactional
-    public Conference updateConference(long id, Conference updatedVersion) throws NoSuchConferenceException, UserUnauthorizedException {
-        var conferenceOpt = conferenceRepository.findById(id);
-        if (conferenceOpt.isEmpty()) {
-            throw new NoSuchConferenceException();
-        }
-        if (!userAuthorized(conferenceOpt)) {
-            throw new UserUnauthorizedException();
-        }
-        Conference toBeUpdated = conferenceOpt.get();
-        toBeUpdated.updateFrom(updatedVersion);
-        return conferenceRepository.save(toBeUpdated);
-    }
-
-    @Transactional
-    public void deleteConference(long id) {
-        var conferenceOpt = conferenceRepository.findById(id);
-        if (conferenceOpt.isEmpty()) {
-            throw new NoSuchConferenceException();
-        }
-        if (!userAuthorized(conferenceOpt)) {
-            throw new UserUnauthorizedException();
-        }
-        conferenceRepository.delete(conferenceOpt.get());
-    }
-
-    private boolean userAuthorized(Optional<Conference> conferenceOpt) {
-        User user = getCurrentlyLoggedUser();
-        var optAuthor = authorRepository.findByUserId(user.getId());
-        return optAuthor.map(
-                author -> conferenceOpt.map(
-                        conference -> conference.getAuthor().getId()
-                                .equals(
-                                        author.getId()))
-                        .orElse(false))
-                .orElse(false);
+        return (User) auth.getPrincipal();
     }
 }
