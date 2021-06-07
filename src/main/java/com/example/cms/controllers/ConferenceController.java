@@ -1,11 +1,14 @@
 package com.example.cms.controllers;
 
+import com.example.cms.exceptions.NoMatchingConferencesException;
 import com.example.cms.exceptions.NoSuchConferenceException;
 import com.example.cms.exceptions.UserUnauthorizedException;
 import com.example.cms.models.Conference;
 import com.example.cms.services.ConferenceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -38,6 +41,16 @@ class ConferenceController {
             return ResponseEntity.ok(conference);
         } catch (NoSuchConferenceException e) {
             return ResponseEntity.status(404).body("There is no such conference");
+        }
+    }
+
+    @GetMapping("/my-conferences")
+    ResponseEntity<?> getMyConferences() {
+        try {
+            List<Conference> myConferences = conferenceService.getMyConferences();
+            return ResponseEntity.ok(myConferences);
+        } catch (NoMatchingConferencesException e) {
+            return ResponseEntity.status(404).body("There are no conferences created by this user");
         }
     }
 

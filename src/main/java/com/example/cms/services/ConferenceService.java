@@ -1,5 +1,6 @@
 package com.example.cms.services;
 
+import com.example.cms.exceptions.NoMatchingConferencesException;
 import com.example.cms.exceptions.NoSuchConferenceException;
 import com.example.cms.exceptions.UserUnauthorizedException;
 import com.example.cms.models.Author;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +25,26 @@ public class ConferenceService {
     public ConferenceService(ConferenceRepository conferenceRepository, AuthorRepository authorRepository) {
         this.conferenceRepository = conferenceRepository;
         this.authorRepository = authorRepository;
+    }
+
+    public Conference getConference(long id) throws NoSuchConferenceException {
+        var conferenceOpt = conferenceRepository.findById(id);
+        if (conferenceOpt.isEmpty()) {
+            throw new NoSuchConferenceException();
+        }
+        return conferenceOpt.get();
+    }
+
+    public List<Conference> getMyConferences() throws NoMatchingConferencesException {
+        User user = getCurrentlyLoggedUser();
+        Author author = authorRepository.findByUserId(user.getId()).orElseThrow(NoMatchingConferencesException::new);
+        List<Conference> myConferences = conferenceRepository.findAllByAuthorId(author.getId());
+
+        if (myConferences.isEmpty()) {
+            throw new NoMatchingConferencesException();
+        }
+
+        return myConferences;
     }
 
     public Iterable<Conference> getAllConferences() {
@@ -61,14 +83,6 @@ public class ConferenceService {
             throw new UserUnauthorizedException();
         }
         conferenceRepository.delete(conferenceOpt.get());
-    }
-
-    public Conference getConference(long id) throws NoSuchConferenceException {
-        var conferenceOpt = conferenceRepository.findById(id);
-        if (conferenceOpt.isEmpty()) {
-            throw new NoSuchConferenceException();
-        }
-        return conferenceOpt.get();
     }
 
     private boolean userAuthorized(Optional<Conference> conferenceOpt) {
