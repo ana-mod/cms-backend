@@ -107,7 +107,7 @@ class ConferenceController {
         }
     }
 
-    @GetMapping("/participants")
+    @GetMapping("/participants/{id}")
     public ResponseEntity<?> getParticipants(@PathVariable long id) {
         try {
             return ResponseEntity.ok(conferenceService.getParticipants(id));
