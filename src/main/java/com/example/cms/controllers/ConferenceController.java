@@ -4,6 +4,8 @@ import com.example.cms.exceptions.NoMatchingConferencesException;
 import com.example.cms.exceptions.NoSuchConferenceException;
 import com.example.cms.exceptions.UserUnauthorizedException;
 import com.example.cms.models.Conference;
+import com.example.cms.repositories.AuthorRepository;
+import com.example.cms.repositories.ConferenceRepository;
 import com.example.cms.services.ConferenceService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -114,10 +116,7 @@ class ConferenceController {
         }
     }
 
-    ConferenceController(ConferenceRepository conferenceRepository, AuthorRepository authorsRepository, ConferenceService conferenceService) {
-        this.conferenceRepository = conferenceRepository;
-        this.authorsRepository = authorsRepository;
-    }
+    ConferenceController(ConferenceService conferenceService) {
         this.conferenceService = conferenceService;
     }
 }
