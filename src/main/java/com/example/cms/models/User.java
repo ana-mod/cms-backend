@@ -1,5 +1,6 @@
 package com.example.cms.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,17 +23,20 @@ public class User implements Principal, UserDetails {
 	
 	@Column(name = "Username", unique = true)
 	private String username;
-	
+
+	@JsonIgnore
 	@Column(name = "Password")
     private String password;
     
     @Column(name = "Email", unique = true)
 	private String email;
-	
+
+    @JsonIgnore
 	@ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private Set<Conference> conferences;
 
+	@JsonIgnore
 	@OneToOne(mappedBy = "user")
 	private Author author;
 
