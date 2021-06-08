@@ -106,9 +106,25 @@ public class User implements Principal, UserDetails {
 		this.email = email;
 	}
 
+	public Set<Conference> getConferences() {
+		return conferences;
+	}
 
 	@Override
 	public String getName() {
 		return username;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		User user = (User) o;
+		return id.equals(user.id);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
 	}
 }

@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class ConferenceService {
@@ -84,6 +85,39 @@ public class ConferenceService {
         }
         conferenceRepository.delete(conferenceOpt.get());
     }
+
+    @Transactional
+    public void enrollToConference(long conferenceId) {
+        Optional<Conference> conferenceOptional = conferenceRepository.findById(conferenceId);
+        if (conferenceOptional.isEmpty()) {
+            throw new NoSuchConferenceException();
+        }
+        User user = getCurrentlyLoggedUser();
+        Conference conference = conferenceOptional.get();
+        conference.getUsers().add(user);
+        conferenceRepository.save(conference);
+    }
+
+    @Transactional
+    public void disenrollFromConference(long conferenceId) {
+        Optional<Conference> conferenceOptional = conferenceRepository.findById(conferenceId);
+        if (conferenceOptional.isEmpty()) {
+            throw new NoSuchConferenceException();
+        }
+        User user = getCurrentlyLoggedUser();
+        Conference conference = conferenceOptional.get();
+        conference.getUsers().remove(user);
+        conferenceRepository.save(conference);
+    }
+
+    public Set<User> getParticipants(long conferenceId) {
+        Optional<Conference> conferenceOptional = conferenceRepository.findById(conferenceId);
+        if (conferenceOptional.isEmpty()) {
+            throw new NoSuchConferenceException();
+        }
+        return conferenceOptional.get().getUsers();
+    }
+
 
     private boolean userAuthorized(Optional<Conference> conferenceOpt) {
         User user = getCurrentlyLoggedUser();

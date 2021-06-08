@@ -85,7 +85,39 @@ class ConferenceController {
         }
     }
 
-    ConferenceController(ConferenceService conferenceService) {
+    @GetMapping("/enroll/{id}")
+    public ResponseEntity<?> enrollToConference(@PathVariable long id) {
+        try {
+            conferenceService.enrollToConference(id);
+            return ResponseEntity.ok().build();
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        }
+    }
+
+    @GetMapping("/disenroll/{id}")
+    public ResponseEntity<?> disenrollFromConference(@PathVariable long id) {
+        try {
+            conferenceService.disenrollFromConference(id);
+            return ResponseEntity.ok().build();
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        }
+    }
+
+    @GetMapping("/participants")
+    public ResponseEntity<?> getParticipants(@PathVariable long id) {
+        try {
+            return ResponseEntity.ok(conferenceService.getParticipants(id));
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        }
+    }
+
+    ConferenceController(ConferenceRepository conferenceRepository, AuthorRepository authorsRepository, ConferenceService conferenceService) {
+        this.conferenceRepository = conferenceRepository;
+        this.authorsRepository = authorsRepository;
+    }
         this.conferenceService = conferenceService;
     }
 }
