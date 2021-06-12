@@ -71,7 +71,7 @@ class ConferenceController {
         } catch (NoSuchConferenceException e) {
             return ResponseEntity.status(404).body("There is no such conference");
         } catch (UserUnauthorizedException e) {
-            return ResponseEntity.status(401).body("You must be the author to update a conference.");
+            return ResponseEntity.status(401).body("You must be the creator to update a conference.");
         }
     }
 
@@ -83,7 +83,7 @@ class ConferenceController {
         } catch (NoSuchConferenceException e) {
             return ResponseEntity.status(404).body("There is no such conference");
         } catch (UserUnauthorizedException e) {
-            return ResponseEntity.status(401).body("You must be the author to delete a conference.");
+            return ResponseEntity.status(401).body("You must be the creator to delete a conference.");
         }
     }
 

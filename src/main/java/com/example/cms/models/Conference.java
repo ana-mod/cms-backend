@@ -22,8 +22,8 @@ class Conference {
 	private String topic;
 	
 	@ManyToOne
-	@JoinColumn(name="AuthorId", referencedColumnName = "AuthorId")
-	private Author author;
+	@JoinColumn(name="UserId", referencedColumnName = "UserId")
+	private User creator;
 
 	@Column
 	private Date startDate;
@@ -80,12 +80,12 @@ class Conference {
 		this.topic = topic;
 	}
 
-	public Author getAuthor() {
-		return author;
+	public User getCreator() {
+		return creator;
 	}
 
-	public void setAuthor(Author author) {
-		this.author = author;
+	public void setCreator(User creator) {
+		this.creator = creator;
 	}
 
 	public Date getStartDate() {
