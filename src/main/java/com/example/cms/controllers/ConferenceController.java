@@ -120,7 +120,7 @@ class ConferenceController {
     public ResponseEntity<?> getEnrolledConferences(){
         try {
             return ResponseEntity.ok(conferenceService.getEnrolledConferences());
-        } catch (NoSuchConferenceException e) {
+        } catch (NoMatchingConferencesException e) {
             return ResponseEntity.status(404).body("You are not enrolled to any conferences yet");
         }
     }
