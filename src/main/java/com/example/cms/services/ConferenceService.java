@@ -110,7 +110,7 @@ public class ConferenceService {
         conferenceRepository.save(conference);
     }
 
-    public List<User> getParticipants(long conferenceId) {
+    public Set<User> getParticipants(long conferenceId) {
         Optional<Conference> conferenceOptional = conferenceRepository.findById(conferenceId);
         if (conferenceOptional.isEmpty()) {
             throw new NoSuchConferenceException();
