@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ConferenceRepository extends CrudRepository<Conference, Long> {
 
-    public List<Conference> findAllByAuthorId(long id);
+    public List<Conference> findAllByCreatorId(long id);
 }

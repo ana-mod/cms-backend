@@ -3,10 +3,8 @@ package com.example.cms.services;
 import com.example.cms.exceptions.NoMatchingConferencesException;
 import com.example.cms.exceptions.NoSuchConferenceException;
 import com.example.cms.exceptions.UserUnauthorizedException;
-import com.example.cms.models.Author;
 import com.example.cms.models.Conference;
 import com.example.cms.models.User;
-import com.example.cms.repositories.AuthorRepository;
 import com.example.cms.repositories.ConferenceRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,11 +19,9 @@ import java.util.Set;
 public class ConferenceService {
 
     private final ConferenceRepository conferenceRepository;
-    private final AuthorRepository authorRepository;
 
-    public ConferenceService(ConferenceRepository conferenceRepository, AuthorRepository authorRepository) {
+    public ConferenceService(ConferenceRepository conferenceRepository) {
         this.conferenceRepository = conferenceRepository;
-        this.authorRepository = authorRepository;
     }
 
     public Conference getConference(long id) throws NoSuchConferenceException {
@@ -38,8 +34,7 @@ public class ConferenceService {
 
     public List<Conference> getMyConferences() throws NoMatchingConferencesException {
         User user = getCurrentlyLoggedUser();
-        Author author = authorRepository.findByUserId(user.getId()).orElseThrow(NoMatchingConferencesException::new);
-        List<Conference> myConferences = conferenceRepository.findAllByAuthorId(author.getId());
+        List<Conference> myConferences = conferenceRepository.findAllByCreatorId(user.getId());
 
         if (myConferences.isEmpty()) {
             throw new NoMatchingConferencesException();
@@ -54,8 +49,7 @@ public class ConferenceService {
 
     @Transactional
     public Conference createConference(Conference conferenceToCreate) {
-        Author author = findOrCreateAuthor();
-        conferenceToCreate.setAuthor(author);
+        conferenceToCreate.setCreator(getCurrentlyLoggedUser());
 
         return conferenceRepository.save(conferenceToCreate);
     }
@@ -66,7 +60,7 @@ public class ConferenceService {
         if (conferenceOpt.isEmpty()) {
             throw new NoSuchConferenceException();
         }
-        if (!userAuthorized(conferenceOpt)) {
+        if (!userIsAuthorized(conferenceOpt)) {
             throw new UserUnauthorizedException();
         }
         Conference toBeUpdated = conferenceOpt.get();
@@ -80,7 +74,7 @@ public class ConferenceService {
         if (conferenceOpt.isEmpty()) {
             throw new NoSuchConferenceException();
         }
-        if (!userAuthorized(conferenceOpt)) {
+        if (!userIsAuthorized(conferenceOpt)) {
             throw new UserUnauthorizedException();
         }
         conferenceRepository.delete(conferenceOpt.get());
@@ -119,31 +113,15 @@ public class ConferenceService {
     }
 
 
-    private boolean userAuthorized(Optional<Conference> conferenceOpt) {
-        User user = getCurrentlyLoggedUser();
-        var optAuthor = authorRepository.findByUserId(user.getId());
-        return optAuthor.map(
-                author -> conferenceOpt.map(
-                        conference -> conference.getAuthor().getId()
-                                .equals(
-                                        author.getId()))
-                        .orElse(false))
+    private boolean userIsAuthorized(Optional<Conference> conferenceOpt) {
+        User currentlyLoggedUser = getCurrentlyLoggedUser();
+
+        return conferenceOpt.map(
+                conference -> conference.getCreator().getId()
+                        .equals(
+                                currentlyLoggedUser.getId()))
                 .orElse(false);
-    }
 
-    private Author findOrCreateAuthor() {
-        User user = getCurrentlyLoggedUser();
-        var optAuthor = authorRepository.findByUserId(user.getId());
-        Author author;
-
-        if (optAuthor.isPresent()) {
-            author = optAuthor.get();
-        } else {
-            author = new Author(user);
-            authorRepository.save(author);
-        }
-
-        return author;
     }
 
     private User getCurrentlyLoggedUser() {
