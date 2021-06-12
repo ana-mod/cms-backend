@@ -39,6 +39,7 @@ class Conference {
 	private List<Notification> notifications;
 
 	@JoinTable(joinColumns = @JoinColumn(name = "ConferenceId"), inverseJoinColumns = @JoinColumn(name = "UserId"))
+	@LazyCollection(LazyCollectionOption.TRUE)
 	@ManyToMany
 	 private Set<User> users;
 
