@@ -6,6 +6,7 @@ import com.example.cms.repositories.UserRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -28,6 +29,14 @@ public class UserService {
     private User getCurrentlyLoggedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (User) auth.getPrincipal();
+    }
+
+    @Transactional
+    public void deleteUser() {
+    
+        User user = getCurrentlyLoggedUser();
+        userRepository.delete(user);
+
     }
     
 
