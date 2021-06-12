@@ -41,7 +41,7 @@ class Conference {
 	@JoinTable(joinColumns = @JoinColumn(name = "ConferenceId"), inverseJoinColumns = @JoinColumn(name = "UserId"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@ManyToMany
-	 private Set<User> users;
+	 private List<User> users;
 
 	@OneToMany(mappedBy = "conference")
 	@LazyCollection(LazyCollectionOption.TRUE)
@@ -50,7 +50,7 @@ class Conference {
 	public Conference() {}
 
 	public Conference(String topic, Date startDate, Date endDate, String description,
-			List<Notification> notifications, Set<User> users, List<Presentation> presentations) {
+			List<Notification> notifications, List<User> users, List<Presentation> presentations) {
 		this.topic = topic;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -120,11 +120,11 @@ class Conference {
 		this.notifications = notifications;
 	}
 
-	public Set<User> getUsers() {
+	public List<User> getUsers() {
 		return users;
 	}
 
-	public void setUsers(Set<User> users) {
+	public void setUsers(List<User> users) {
 		this.users = users;
 	}
 
