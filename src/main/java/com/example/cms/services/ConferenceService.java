@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -112,6 +113,24 @@ public class ConferenceService {
         return conferenceOptional.get().getUsers();
     }
 
+    public List<Conference> getEnrolledConferences() {
+        
+        User user = getCurrentlyLoggedUser();
+
+        List<Long> conferencesId = conferenceRepository.findEnrolledByUserId(user.getId());
+
+        if(conferencesId == null) {
+            throw new NoMatchingConferencesException();
+        }
+
+        List<Conference> enrolledConferences = new ArrayList<Conference>();
+        for(Long id : conferencesId) {
+            enrolledConferences.add(getConference(id));
+        }
+
+        return enrolledConferences;
+    }
+
 
     private boolean userIsAuthorized(Optional<Conference> conferenceOpt) {
         User currentlyLoggedUser = getCurrentlyLoggedUser();
@@ -128,4 +147,6 @@ public class ConferenceService {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         return (User) auth.getPrincipal();
     }
+
+
 }

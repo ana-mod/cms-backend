@@ -116,6 +116,15 @@ class ConferenceController {
         }
     }
 
+    @GetMapping("my-enrolled-conferences")
+    public ResponseEntity<?> getEnrolledConferences(){
+        try {
+            return ResponseEntity.ok(conferenceService.getEnrolledConferences());
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("You are not enrolled to any conferences yet");
+        }
+    }
+
     ConferenceController(ConferenceService conferenceService) {
         this.conferenceService = conferenceService;
     }
