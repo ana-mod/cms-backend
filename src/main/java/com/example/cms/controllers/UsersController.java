@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.cms.services.ConferenceService;
 import com.example.cms.services.UserService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -14,9 +15,11 @@ import com.example.cms.services.UserService;
 public class UsersController {
 
     private final UserService userService;
+    private final ConferenceService conferenceService;
 
-    public UsersController(UserService userService) {
+    public UsersController(UserService userService, ConferenceService conferenceService) {
         this.userService = userService;
+        this.conferenceService = conferenceService;
     }
 
     @GetMapping("/users")
@@ -39,6 +42,7 @@ public class UsersController {
     ResponseEntity<?> deleteUser() {
 
         try {
+            conferenceService.disenrollFromEveryConference();
             userService.deleteUser();
             return ResponseEntity.ok().build();
         }
