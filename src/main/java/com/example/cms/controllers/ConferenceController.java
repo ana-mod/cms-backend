@@ -66,7 +66,7 @@ class ConferenceController {
         }
     }
 
-    /*@PostMapping("/conference/{id}/sendNotification")
+    @PostMapping("/conference/{id}/sendNotification")
     ResponseEntity<?>sendNotification(@PathVariable long id,@PathVariable String owner, @RequestBody Conference conference, @RequestBody Notification notification){
         Object conf = conferenceRepository.findById(id);
         Conference conferenceToNotificate;
@@ -75,11 +75,12 @@ class ConferenceController {
 
         } else {
             conferenceToNotificate = conferenceRepository.findById(id).get();
-            conference.setNotifications(notification);
-
+            conferenceToNotificate.getNotifications().add(notification);
+            conferenceToNotificate.updateFrom(conference);
+            conferenceToNotificate.save(conferenceToAddPresentation);
             return  ResponseEntity.ok(conferenceToNotificate);
         }
-    }*/
+    }
     @PostMapping("/conference/{id}")
     ResponseEntity<?> editConference(@PathVariable long id, @RequestBody Conference updated) {
         var conferenceOpt = conferenceRepository.findById(id);

@@ -18,6 +18,7 @@ public interface ConferenceRepository extends CrudRepository<Conference, Long> {
     "FROM cms_conference_users " +
     "WHERE user_id=:userId")
     List<Long> findEnrolledByUserId(@Param("userId") Long userId);
+    
     @Query("select c from Conference c where search like %?1%")
     List<Conference> findByName(String search, Pageable pageable);
 

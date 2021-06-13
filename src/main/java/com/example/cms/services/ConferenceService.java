@@ -1,4 +1,4 @@
-package com.example.cms.services;
+/*package com.example.cms.services;
 
 import com.example.cms.exceptions.NoMatchingConferencesException;
 import com.example.cms.exceptions.NoSuchConferenceException;
@@ -149,4 +149,4 @@ public class ConferenceService {
     }
 
 
-}
+}*/

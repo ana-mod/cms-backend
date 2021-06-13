@@ -40,11 +40,15 @@ public class User implements Principal, UserDetails {
 	@OneToOne(mappedBy = "user")
 	private Author author;
 
+	@OneToMany(mappedBy = "user")
+	@LazyCollection(LazyCollectionOption.TRUE)
+	private List<Presentation> presentations;
 
 	public User(String username, String password, String email) {
 		this.username = username;
         this.password = password;
         this.email = email;
+        this.presentations = new LinkedList<Presentation>();
 	}
 
 	public User() {
@@ -113,6 +117,14 @@ public class User implements Principal, UserDetails {
 
 	public Set<Conference> getConferences() {
 		return conferences;
+	}
+
+	public List<Presentation> getPresentations() {
+		return presentations;
+	}
+
+	public void setPresentations(LinkedList<Presentation> presentations) {
+		this.presentations = presentations;
 	}
 
 	@Override
