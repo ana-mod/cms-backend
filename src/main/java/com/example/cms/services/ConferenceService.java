@@ -84,6 +84,7 @@ public class ConferenceService {
             throw new UserUnauthorizedException();
         }
         Conference toAddPresentationTo = conferenceOpt.get();
+        presentationToAdd.setConference(toAddPresentationTo);
         toAddPresentationTo.addPresentationToExisting(presentationToAdd);
         presentationRepository.save(presentationToAdd);
         return conferenceRepository.save(toAddPresentationTo);
