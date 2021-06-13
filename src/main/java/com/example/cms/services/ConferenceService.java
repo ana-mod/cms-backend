@@ -8,7 +8,6 @@ import com.example.cms.models.Presentation;
 import com.example.cms.models.User;
 import com.example.cms.repositories.ConferenceRepository;
 import com.example.cms.repositories.PresentationRepository;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -56,6 +55,14 @@ public class ConferenceService {
     @Transactional
     public Conference createConference(Conference conferenceToCreate) {
         conferenceToCreate.setCreator(getCurrentlyLoggedUser());
+
+        List<Presentation> presentations = conferenceToCreate.getPresentations();
+
+        if (presentations != null && !presentations.isEmpty()) {
+            presentations.forEach(presentation -> presentation.setConference(conferenceToCreate));
+
+            presentationRepository.saveAll(presentations);
+        }
 
         return conferenceRepository.save(conferenceToCreate);
     }
