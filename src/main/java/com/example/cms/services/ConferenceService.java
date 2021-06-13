@@ -105,6 +105,14 @@ public class ConferenceService {
         conferenceRepository.save(conference);
     }
 
+    @Transactional
+    public void disenrollFromEveryConference() {
+        List<Long> conferencesId = getEnrolledConferencesId();
+        for (Long id : conferencesId) {
+            disenrollFromConference(id);
+        }
+    }
+
     public Set<User> getParticipants(long conferenceId) {
         Optional<Conference> conferenceOptional = conferenceRepository.findById(conferenceId);
         if (conferenceOptional.isEmpty()) {
@@ -129,6 +137,15 @@ public class ConferenceService {
         }
 
         return enrolledConferences;
+    }
+
+    private List<Long> getEnrolledConferencesId(){
+
+        User user = getCurrentlyLoggedUser();
+
+        List<Long> conferencesId = conferenceRepository.findEnrolledByUserId(user.getId());
+
+        return conferencesId;
     }
 
 

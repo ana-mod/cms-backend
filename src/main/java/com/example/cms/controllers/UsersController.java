@@ -6,6 +6,7 @@ import com.example.cms.models.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.example.cms.services.ConferenceService;
 import com.example.cms.services.UserService;
 
 import java.util.LinkedList;
@@ -16,9 +17,11 @@ public class UsersController {
 
 
     private final UserService userService;
+    private final ConferenceService conferenceService;
 
-    public UsersController(UserService userService) {
+    public UsersController(UserService userService, ConferenceService conferenceService) {
         this.userService = userService;
+        this.conferenceService = conferenceService;
     }
 
     @GetMapping("/users")
@@ -51,6 +54,7 @@ public class UsersController {
     ResponseEntity<?> deleteUser() {
 
         try {
+            conferenceService.disenrollFromEveryConference();
             userService.deleteUser();
             return ResponseEntity.ok().build();
         }
