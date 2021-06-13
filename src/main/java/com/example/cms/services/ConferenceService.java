@@ -4,6 +4,7 @@ import com.example.cms.exceptions.NoMatchingConferencesException;
 import com.example.cms.exceptions.NoSuchConferenceException;
 import com.example.cms.exceptions.UserUnauthorizedException;
 import com.example.cms.models.Conference;
+import com.example.cms.models.Presentation;
 import com.example.cms.models.User;
 import com.example.cms.repositories.ConferenceRepository;
 import org.springframework.security.core.Authentication;
@@ -67,6 +68,20 @@ public class ConferenceService {
         Conference toBeUpdated = conferenceOpt.get();
         toBeUpdated.updateFrom(updatedVersion);
         return conferenceRepository.save(toBeUpdated);
+    }
+
+    @Transactional
+    public Conference addPresentationToExisting(long id, Presentation presentationToAdd) throws NoSuchConferenceException, UserUnauthorizedException {
+        var conferenceOpt = conferenceRepository.findById(id);
+        if (conferenceOpt.isEmpty()) {
+            throw new NoSuchConferenceException();
+        }
+        if (!userIsAuthorized(conferenceOpt)) {
+            throw new UserUnauthorizedException();
+        }
+        Conference toAddPresentationTo = conferenceOpt.get();
+        toAddPresentationTo.addPresentationToExisting(presentationToAdd);
+        return conferenceRepository.save(toAddPresentationTo);
     }
 
     @Transactional

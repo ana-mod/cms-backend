@@ -4,6 +4,7 @@ import com.example.cms.exceptions.NoMatchingConferencesException;
 import com.example.cms.exceptions.NoSuchConferenceException;
 import com.example.cms.exceptions.UserUnauthorizedException;
 import com.example.cms.models.Conference;
+import com.example.cms.models.Presentation;
 import com.example.cms.repositories.AuthorRepository;
 import com.example.cms.repositories.ConferenceRepository;
 import com.example.cms.services.ConferenceService;
@@ -116,13 +117,27 @@ class ConferenceController {
         }
     }
 
-    @GetMapping("my-enrolled-conferences")
+    @GetMapping("/my-enrolled-conferences")
     public ResponseEntity<?> getEnrolledConferences(){
         try {
             return ResponseEntity.ok(conferenceService.getEnrolledConferences());
         } catch (NoMatchingConferencesException e) {
             return ResponseEntity.status(404).body("You are not enrolled to any conferences yet");
         }
+    }
+
+    @PostMapping("/conference/{id}/presentation")
+    public ResponseEntity<?> addPresentationToExisting(@PathVariable long id, @RequestBody Presentation presentation) {
+
+        try {
+            Conference conferenceToAddPresentationTo = conferenceService.addPresentationToExisting(id, presentation);
+            return ResponseEntity.ok(conferenceToAddPresentationTo);
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        } catch (UserUnauthorizedException e) {
+            return ResponseEntity.status(401).body("You must be the creator to add a presentation.");
+        }
+
     }
 
     ConferenceController(ConferenceService conferenceService) {
