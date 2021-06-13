@@ -17,17 +17,17 @@ class Conference {
 	@GeneratedValue
 	@Column(name = "ConferenceId")
 	private Long id;
-	
+
 	@Column
 	private String topic;
-	
+
 	@ManyToOne
 	@JoinColumn(name="UserId", referencedColumnName = "UserId")
 	private User creator;
 
 	@Column
 	private Date startDate;
-	
+
 	@Column
 	private Date endDate;
 
@@ -41,7 +41,7 @@ class Conference {
 	@JoinTable(joinColumns = @JoinColumn(name = "ConferenceId"), inverseJoinColumns = @JoinColumn(name = "UserId"))
 	@LazyCollection(LazyCollectionOption.TRUE)
 	@ManyToMany
-	 private Set<User> users;
+	private Set<User> users;
 
 	@OneToMany(mappedBy = "conference")
 	@LazyCollection(LazyCollectionOption.TRUE)
@@ -50,7 +50,7 @@ class Conference {
 	public Conference() {}
 
 	public Conference(String topic, Date startDate, Date endDate, String description,
-			List<Notification> notifications, Set<User> users, List<Presentation> presentations) {
+					  List<Notification> notifications, Set<User> users, List<Presentation> presentations) {
 		this.topic = topic;
 		this.startDate = startDate;
 		this.endDate = endDate;

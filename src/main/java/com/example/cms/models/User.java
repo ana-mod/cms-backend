@@ -15,23 +15,23 @@ import javax.persistence.*;
 @Entity
 @Table(name = "cms_user")
 public class User implements Principal, UserDetails {
-   
-    @Id
+
+	@Id
 	@GeneratedValue
 	@Column(name = "UserId")
 	private Long id;
-	
+
 	@Column(name = "Username", unique = true)
 	private String username;
 
 	@JsonIgnore
 	@Column(name = "Password")
-    private String password;
-    
-    @Column(name = "Email", unique = true)
+	private String password;
+
+	@Column(name = "Email", unique = true)
 	private String email;
 
-    @JsonIgnore
+	@JsonIgnore
 	@ManyToMany(mappedBy = "users", fetch = FetchType.LAZY)
 	@LazyCollection(LazyCollectionOption.TRUE)
 	private Set<Conference> conferences;
@@ -40,15 +40,10 @@ public class User implements Principal, UserDetails {
 	@OneToOne(mappedBy = "user")
 	private Author author;
 
-	@OneToMany(mappedBy = "user")
-	@LazyCollection(LazyCollectionOption.TRUE)
-	private List<Presentation> presentations;
-
 	public User(String username, String password, String email) {
 		this.username = username;
-        this.password = password;
-        this.email = email;
-        this.presentations = new LinkedList<Presentation>();
+		this.password = password;
+		this.email = email;
 	}
 
 	public User() {
@@ -117,14 +112,6 @@ public class User implements Principal, UserDetails {
 
 	public Set<Conference> getConferences() {
 		return conferences;
-	}
-
-	public List<Presentation> getPresentations() {
-		return presentations;
-	}
-
-	public void setPresentations(LinkedList<Presentation> presentations) {
-		this.presentations = presentations;
 	}
 
 	@Override

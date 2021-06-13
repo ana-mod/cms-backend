@@ -143,7 +143,7 @@ public class ConferenceService {
     }
 
     public List<Conference> getEnrolledConferences() {
-        
+
         User user = getCurrentlyLoggedUser();
 
         List<Long> conferencesId = conferenceRepository.findEnrolledByUserId(user.getId());

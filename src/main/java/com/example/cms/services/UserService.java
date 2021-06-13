@@ -17,9 +17,9 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-	public Iterable<User> getAllUsers() {
-		return userRepository.findAll();
-	}
+    public Iterable<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 
     public User getMyUser() {
         User user = getCurrentlyLoggedUser();
@@ -33,12 +33,12 @@ public class UserService {
 
     @Transactional
     public void deleteUser() {
-    
+
         User user = getCurrentlyLoggedUser();
         userRepository.delete(user);
 
     }
-    
+
 
 
 }
