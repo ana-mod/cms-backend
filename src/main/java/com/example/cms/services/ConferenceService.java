@@ -148,7 +148,7 @@ public class ConferenceService {
 
         List<Long> conferencesId = conferenceRepository.findEnrolledByUserId(user.getId());
 
-        if(conferencesId == null) {
+        if(conferencesId.isEmpty()) {
             throw new NoMatchingConferencesException();
         }
 
