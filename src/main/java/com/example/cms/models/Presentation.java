@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "cms_presentation")
 public class Presentation {
@@ -14,10 +16,12 @@ public class Presentation {
     
     @ManyToOne(targetEntity = Author.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "AuthorId", referencedColumnName = "AuthorId")
+    @JsonIgnore
     private Author author;
 
 	@ManyToOne(targetEntity = Conference.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "ConferenceId", referencedColumnName = "ConferenceId")
+    @JoinColumn(name = "ConferenceId", referencedColumnName = "ConferenceId")
+    @JsonIgnore
 	private Conference conference;
 
 	@Column(name = "Name")

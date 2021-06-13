@@ -85,6 +85,7 @@ public class ConferenceService {
         }
         Conference toAddPresentationTo = conferenceOpt.get();
         presentationToAdd.setConference(toAddPresentationTo);
+        //presentationToAdd.setAuthor(user);
         toAddPresentationTo.addPresentationToExisting(presentationToAdd);
         presentationRepository.save(presentationToAdd);
         return conferenceRepository.save(toAddPresentationTo);
