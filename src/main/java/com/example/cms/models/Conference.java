@@ -146,5 +146,9 @@ class Conference {
 		this.presentations = source.presentations;
 	}
 
+	public void addPresentationToExisting(Presentation presentationToAdd){
+		this.presentations.add(presentationToAdd);
+	}
+
 
 }

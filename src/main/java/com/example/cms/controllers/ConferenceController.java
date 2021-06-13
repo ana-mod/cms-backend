@@ -1,115 +1,146 @@
 package com.example.cms.controllers;
 
-import com.example.cms.models.*;
+import com.example.cms.exceptions.NoMatchingConferencesException;
+import com.example.cms.exceptions.NoSuchConferenceException;
+import com.example.cms.exceptions.UserUnauthorizedException;
+import com.example.cms.models.Conference;
+import com.example.cms.models.Presentation;
 import com.example.cms.repositories.AuthorRepository;
 import com.example.cms.repositories.ConferenceRepository;
-import org.springframework.data.domain.*;
+import com.example.cms.services.ConferenceService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 class ConferenceController {
 
-    private final ConferenceRepository conferenceRepository;
-    private final AuthorRepository authorsRepository;
+    private final ConferenceService conferenceService;
 
     @GetMapping("/")
     String hello() {
         return "Hello there";
     }
 
-
     @GetMapping("/conferences")
-    public List<Conference> findAll(@RequestParam Optional<String> search,
-                                    @RequestParam Optional<Integer> page,
-                                    @RequestParam Optional<String> sortBy){
-        int pageOrElse = page.orElse(0);
-        Pageable pageable = PageRequest.of(pageOrElse,5,Sort.by(sortBy.orElse("topic")));
-        return conferenceRepository.findByName(search.orElse("_"), pageable);
+    Iterable<Conference> conferences() {
+        return conferenceService.getAllConferences();
     }
+
+//     @GetMapping("/conferences")
+//     Iterable<Conference> searchByfilter(@RequestParam Optional<String> search
+//     									@RequestParam Optional<String> sortBy) {
+//         return conferenceRepository.findByName(search.orElse("_"),
+//         		new PageRequest(page.orElse(0),5,
+//         				Sort.Direction.ASC, sortBy.orElse("startDate")));
+//     }
+
+    @GetMapping("/conferences/{id}")
+    ResponseEntity<?> getConference(@PathVariable long id) {
+        try {
+            Conference conference = conferenceService.getConference(id);
+            return ResponseEntity.ok(conference);
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        }
+    }
+
+    @GetMapping("/my-conferences")
+    ResponseEntity<?> getMyConferences() {
+        try {
+            List<Conference> myConferences = conferenceService.getMyConferences();
+            return ResponseEntity.ok(myConferences);
+        } catch (NoMatchingConferencesException e) {
+            return ResponseEntity.status(404).body("There are no conferences created by this user");
+        }
+    }
+
 
     @PostMapping("/conference")
     ResponseEntity<Conference> createConference(@RequestBody Conference conferenceToAdd) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
-        Author author;
-        if (authorsRepository.existsByUserId(user.getId())) {
-            author = authorsRepository.findByUserId(user.getId());
-        } else {
-            author = new Author(user);
-            authorsRepository.save(author);
-        }
-        conferenceToAdd.setAuthor(author);
-
-        Conference result = conferenceRepository.save(conferenceToAdd);
+        Conference result = conferenceService.createConference(conferenceToAdd);
         return ResponseEntity.ok(result);
     }
-    @PostMapping("/conference/{id}/addPresentation")
-    ResponseEntity<?>addPresentationExistingConference(@PathVariable long id, @RequestBody Conference conference, @RequestBody Presentation presentation){
-        Object conf = conferenceRepository.findById(id);
-        Conference conferenceToAddPresentation;
-        if (conf==null) {
-            return ResponseEntity.status(404).body("There is not such conference");
 
-        } else {
-            conferenceToAddPresentation = conferenceRepository.findById(id).get();
-            conferenceToAddPresentation.getPresentations().add(presentation);
-            conferenceToAddPresentation.updateFrom(conference);
-            conferenceRepository.save(conferenceToAddPresentation);
-            return  ResponseEntity.ok(conferenceToAddPresentation);
-        }
-    }
-
-    @PostMapping("/conference/{id}/sendNotification")
-    ResponseEntity<?>sendNotification(@PathVariable long id,@PathVariable String owner, @RequestBody Conference conference, @RequestBody Notification notification){
-        Object conf = conferenceRepository.findById(id);
-        Conference conferenceToNotificate;
-        if (conf==null) {
-            return ResponseEntity.status(404).body("There is not such conference");
-
-        } else {
-            conferenceToNotificate = conferenceRepository.findById(id).get();
-            conferenceToNotificate.getNotifications().add(notification);
-            conferenceToNotificate.updateFrom(conference);
-            conferenceToNotificate.save(conferenceToAddPresentation);
-            return  ResponseEntity.ok(conferenceToNotificate);
-        }
-    }
     @PostMapping("/conference/{id}")
     ResponseEntity<?> editConference(@PathVariable long id, @RequestBody Conference updated) {
-        var conferenceOpt = conferenceRepository.findById(id);
-        Conference conferenceToUpdate;
-        if (conferenceOpt.isEmpty()) {
+        try {
+            Conference conferenceToUpdate = conferenceService.updateConference(id, updated);
+            return ResponseEntity.ok(conferenceToUpdate);
+        } catch (NoSuchConferenceException e) {
             return ResponseEntity.status(404).body("There is no such conference");
-
-        } else {
-            conferenceToUpdate = conferenceRepository.findById(id).get();
-
-            if (!requesterIsAuthor(conferenceToUpdate)) {
-                return ResponseEntity.status(401).body("You must be the author to update a conference.");
-            } else {
-                conferenceToUpdate.updateFrom(updated);
-                conferenceRepository.save(conferenceToUpdate);
-                return ResponseEntity.ok(conferenceToUpdate);
-            }
+        } catch (UserUnauthorizedException e) {
+            return ResponseEntity.status(401).body("You must be the creator to update a conference.");
         }
     }
 
-    private boolean requesterIsAuthor(Conference conf) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) auth.getPrincipal();
-        Author author = authorsRepository.findByUserId(user.getId());
-        return author != null && author.getId().equals(conf.getAuthor().getId());
+    @DeleteMapping("/conference/{id}")
+    ResponseEntity<?> deleteConference(@PathVariable long id) {
+        try {
+            conferenceService.deleteConference(id);
+            return ResponseEntity.ok().build();
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        } catch (UserUnauthorizedException e) {
+            return ResponseEntity.status(401).body("You must be the creator to delete a conference.");
+        }
     }
 
-    ConferenceController(ConferenceRepository conferenceRepository, AuthorRepository authorsRepository) {
-        this.conferenceRepository = conferenceRepository;
-        this.authorsRepository = authorsRepository;
+    @GetMapping("/enroll/{id}")
+    public ResponseEntity<?> enrollToConference(@PathVariable long id) {
+        try {
+            conferenceService.enrollToConference(id);
+            return ResponseEntity.ok().build();
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        }
+    }
+
+    @GetMapping("/disenroll/{id}")
+    public ResponseEntity<?> disenrollFromConference(@PathVariable long id) {
+        try {
+            conferenceService.disenrollFromConference(id);
+            return ResponseEntity.ok().build();
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        }
+    }
+
+    @GetMapping("/participants/{id}")
+    public ResponseEntity<?> getParticipants(@PathVariable long id) {
+        try {
+            return ResponseEntity.ok(conferenceService.getParticipants(id));
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        }
+    }
+
+    @GetMapping("/my-enrolled-conferences")
+    public ResponseEntity<?> getEnrolledConferences(){
+        try {
+            return ResponseEntity.ok(conferenceService.getEnrolledConferences());
+        } catch (NoMatchingConferencesException e) {
+            return ResponseEntity.status(404).body("You are not enrolled to any conferences yet");
+        }
+    }
+
+    @PostMapping("/conference/{id}/presentation")
+    public ResponseEntity<?> addPresentationToExisting(@PathVariable long id, @RequestBody Presentation presentation) {
+
+        try {
+            Conference conferenceToAddPresentationTo = conferenceService.addPresentationToExisting(id, presentation);
+            return ResponseEntity.ok(conferenceToAddPresentationTo);
+        } catch (NoSuchConferenceException e) {
+            return ResponseEntity.status(404).body("There is no such conference");
+        } catch (UserUnauthorizedException e) {
+            return ResponseEntity.status(401).body("You must be the creator to add a presentation.");
+        }
+
+    }
+
+    ConferenceController(ConferenceService conferenceService) {
+        this.conferenceService = conferenceService;
     }
 }

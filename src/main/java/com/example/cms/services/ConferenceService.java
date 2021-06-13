@@ -4,8 +4,11 @@ import com.example.cms.exceptions.NoMatchingConferencesException;
 import com.example.cms.exceptions.NoSuchConferenceException;
 import com.example.cms.exceptions.UserUnauthorizedException;
 import com.example.cms.models.Conference;
+import com.example.cms.models.Presentation;
 import com.example.cms.models.User;
 import com.example.cms.repositories.ConferenceRepository;
+import com.example.cms.repositories.PresentationRepository;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -20,9 +23,11 @@ import java.util.Set;
 public class ConferenceService {
 
     private final ConferenceRepository conferenceRepository;
+    private final PresentationRepository presentationRepository;
 
-    public ConferenceService(ConferenceRepository conferenceRepository) {
+    public ConferenceService(ConferenceRepository conferenceRepository, PresentationRepository presentationRepository) {
         this.conferenceRepository = conferenceRepository;
+        this.presentationRepository = presentationRepository;
     }
 
     public Conference getConference(long id) throws NoSuchConferenceException {
@@ -67,6 +72,22 @@ public class ConferenceService {
         Conference toBeUpdated = conferenceOpt.get();
         toBeUpdated.updateFrom(updatedVersion);
         return conferenceRepository.save(toBeUpdated);
+    }
+
+    @Transactional
+    public Conference addPresentationToExisting(long id, Presentation presentationToAdd) throws NoSuchConferenceException, UserUnauthorizedException {
+        var conferenceOpt = conferenceRepository.findById(id);
+        if (conferenceOpt.isEmpty()) {
+            throw new NoSuchConferenceException();
+        }
+        if (!userIsAuthorized(conferenceOpt)) {
+            throw new UserUnauthorizedException();
+        }
+        Conference toAddPresentationTo = conferenceOpt.get();
+        presentationToAdd.setConference(toAddPresentationTo);
+        toAddPresentationTo.addPresentationToExisting(presentationToAdd);
+        presentationRepository.save(presentationToAdd);
+        return conferenceRepository.save(toAddPresentationTo);
     }
 
     @Transactional
