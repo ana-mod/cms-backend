@@ -47,6 +47,14 @@ public class Presentation {
 
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    private void setId(Long id) {
+        this.id = id;
+    }
+
     public Author getAuthor() {
         return author;
     }
@@ -55,7 +63,7 @@ public class Presentation {
         this.author = author;
     }
 
-    public Conference getConference() {
+    private Conference getConference() {
         return conference;
     }
 
